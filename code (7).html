@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eid al Adha Mubarak!</title>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <!-- Importing fonts: Dancing Script for titles and name, Poppins for body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base styles */
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #f7f1e7; /* Cream/Off-white from image */
+            color: #333;
+            margin: 0;
+            text-align: center;
+            overflow-x: hidden;
+            padding-bottom: 120px; /* Space for fixed share button */
+        }
+
+        /* --- Ad Slot Container Styling --- */
+        .ad-slot-container {
+            width: 100%;
+            max-width: 320px; /* Ad width is 320px */
+            min-height: 50px; /* Ad height is 50px */
+            margin: 15px auto; /* Center horizontally and add vertical spacing */
+            display: flex; /* For centering the ad content if needed */
+            align-items: center;
+            justify-content: center;
+            overflow: hidden; /* To prevent ad content from breaking layout */
+            background-color: #f0f0f0; /* Light grey background for visible space */
+            border-radius: 5px; /* Slightly rounded corners for the ad container */
+        }
+
+        /* --- Top Decorations --- */
+        .top-decorations {
+            width: 100%;
+            height: 150px; /* Adjust height based on your image crop */
+            background-image: url('top-decorations.png'); /* IMPORTANT: You must create this image */
+            background-size: contain; /* Scales image to fit, maintaining aspect ratio */
+            background-repeat: no-repeat;
+            background-position: center top;
+            margin-bottom: 20px;
+        }
+
+        /* --- Main Content Container (the card) --- */
+        .container {
+            background-color: #ffffff;
+            /* Adjusted padding-top here to reduce space above image */
+            padding: 10px 25px 25px; /* Top reduced, others remain 25px */
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05); /* Lighter shadow for a subtle lift */
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative; /* Needed for absolute positioning of music button */
+            overflow: hidden;
+        }
+
+        /* --- Framed Person Image (Zaki11.jpg) --- */
+        .framed-person-img {
+            width: 90%; /* Take 90% of container width */
+            max-width: 250px; /* Max width for the image */
+            height: auto;
+            aspect-ratio: 1 / 1; /* FORCED 1:1 SQUARE RATIO */
+            object-fit: cover; /* Fill the frame, cropping if necessary, to maintain ratio */
+            border-radius: 20px; /* Rounded corners to match the original design */
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow for depth */
+        }
+        
+        /* --- Text Styling --- */
+        .greeting-title {
+            font-family: 'Dancing Script', cursive; /* Script font for the main greeting */
+            font-size: 2.8em; /* Large size for prominence */
+            color: #555555; /* Darker grey for main title */
+            margin-bottom: 5px; /* Reduced margin to bring "From [Name]" closer */
+            line-height: 1.2;
+        }
+
+        .sender-line {
+            font-size: 1.1em;
+            color: #333; /* Default text color for "From" */
+            margin-bottom: 20px; /* Space below sender line */
+            text-align: center;
+        }
+
+        .dynamic-name {
+            font-family: 'Dancing Script', cursive; /* Apply script font for the name itself */
+            font-weight: 700; /* Make it bold as requested */
+            font-size: 1.4em; /* Slightly larger than "From" to stand out */
+            display: inline-block; /* Allows vertical alignment/spacing if needed */
+            margin-left: 5px; /* Small space between "From" and name */
+
+            /* Gradient text effect */
+            background: linear-gradient(45deg, #FFD700, #FF6347, #DA70D6, #4682B4, #3CB371); /* Gold, Tomato, Orchid, SteelBlue, MediumSeaGreen */
+            -webkit-background-clip: text; /* Clip background to text shape */
+            -webkit-text-fill-color: transparent; /* Make text transparent to show background */
+            background-clip: text; /* Standard property */
+            color: #8B4513; /* Fallback color for browsers that don't support text-fill-color */
+        }
+
+        .main-message {
+            font-size: 1.1em;
+            color: #444; /* Slightly darker than default text */
+            margin-bottom: 30px;
+            line-height: 1.6;
+            padding: 0 15px; /* Inner padding to prevent text from touching edges */
+        }
+
+        /* --- Name Input Container --- */
+        .name-input-container {
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .name-input-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        #userName {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 80%; /* Responsive width */
+            max-width: 300px; /* Max width for consistency */
+            font-size: 1em;
+            text-align: center; /* Center placeholder and typed text */
+            font-family: 'Poppins', 'Arial', sans-serif;
+            box-sizing: border-box; /* Ensures padding/border are included in width */
+        }
+
+        /* --- Audio Toggle Button Styling --- */
+        #musicToggleButton {
+            background: none;
+            border: none;
+            cursor: pointer;
+            position: absolute; /* Position relative to .container */
+            top: 5px; /* Adjusted position */
+            right: 5px; /* Adjusted position */
+            z-index: 100;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+        #musicToggleButton:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        .speaker-icon {
+            display: block; /* Make sure SVGs are block elements */
+            width: 24px;
+            height: 24px;
+            color: #555555; /* Default unmuted color */
+        }
+        #speakerOff {
+            display: none; /* Muted icon hidden by default, shown via JS */
+        }
+
+        /* --- Action Buttons Container (fixed at bottom) --- */
+        .action-buttons-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%); /* Centers the container */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%; /* Allows it to occupy full width for centering */
+            max-width: 350px; /* Max width for the button itself */
+            z-index: 1000; /* Ensures it stays on top */
+        }
+
+        .action-button {
+            background-color: #5cb85c; /* Green color from image */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 25px; /* Highly rounded corners */
+            font-size: 1.1em;
+            font-family: 'Poppins', Arial, sans-serif;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Space between icon and text */
+            width: 90%; /* Responsive width */
+            max-width: 300px; /* Max width for the button */
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+
+        .action-button:hover {
+            background-color: #4cae4c; /* Darker green on hover */
+        }
+        .button-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* --- Responsive Adjustments (Media Queries) --- */
+        @media (max-width: 600px) {
+            .top-decorations {
+                height: 120px; /* Adjust height for smaller screens */
+                background-size: cover; /* May need to cover to fill width */
+            }
+            .framed-person-img {
+                max-width: 200px; /* Slightly smaller for mobile */
+                border-radius: 15px; /* Slightly less rounded on smaller screens */
+            }
+            .greeting-title { font-size: 2.2em; } /* Smaller font for main title */
+            .sender-line { font-size: 1em; }
+            .dynamic-name { font-size: 1.2em; }
+            .main-message { font-size: 0.95em; padding: 0 10px; }
+            #userName { width: 90%; font-size: 0.95em; }
+            #musicToggleButton { top: 5px; right: 5px; } /* Adjust position for small screens */
+            .action-button {
+                font-size: 1em;
+                padding: 10px 20px;
+            }
+        }
+        @media (max-width: 400px) {
+            .top-decorations { height: 90px; } /* Further adjust height */
+            .framed-person-img { max-width: 180px; } /* Even smaller for very small mobiles */
+            .greeting-title { font-size: 1.8em; } /* Smaller title */
+            .sender-line { font-size: 0.9em; }
+            .dynamic-name { font-size: 1.1em; }
+            .main-message { font-size: 0.85em; }
+            #userName { padding: 10px; font-size: 0.9em; }
+            .action-button {
+                font-size: 0.9em;
+                padding: 8px 15px;
+            }
+            body { padding-bottom: 100px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Banner Ad Slot -->
+    <div id="adSlotTop" class="ad-slot-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '51d40974d52bdd3c0eefb85fdae89c5a',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/51d40974d52bdd3c0eefb85fdae89c5a/invoke.js"></script>
+    </div>
+
+    <div class="top-decorations"></div>
+
+    <div id="mainContent" class="main-content">
+        <div class="container">
+            <!-- Audio Toggle Button -->
+            <button id="musicToggleButton" aria-label="Toggle music mute">
+                <svg id="speakerOn" class="speaker-icon" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px">
+                    <path d="M3 10v4c0 .55.45 1 1 1h3l3.29 3.29c.63.63 1.71.18 1.71-.71V6.41c0-.89-1.08-1.34-1.71-.71L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.98 7-4.66 7-8.77s-2.99-7.79-7-8.77z"/>
+                </svg>
+                <svg id="speakerOff" class="speaker-icon" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px" style="display: none;">
+                    <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.4.05-.63zm2.5 0c0 .99-.19 1.94-.52 2.8L19 15.68c.7-.88 1.2-1.88 1.48-2.97h2.02c-.27 1.79-1.09 3.44-2.29 4.86L20 18.28c1.39-1.66 2.21-3.77 2.21-6.28h-2.02c-.28 1.1-.79 2.11-1.48 2.98zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.41.33-.88.62-1.39.86L18.02 21c1.5-.76 2.7-1.99 3.63-3.46l-1.42-1.42c-.75 1.17-1.67 2.14-2.73 2.91L12 14.73V3.27L4.27 3zM12 4.27L14.73 7H12V4.27z"/>
+                </svg>
+            </button>
+
+            <img src="Zaki11.jpg" alt="Person greeting Eid al Adha" class="framed-person-img">
+
+            <h1 class="greeting-title">Eid al Adha Mubarak</h1>
+
+            <p class="sender-line">
+                From <span id="displayedSenderName" class="dynamic-name"></span>
+            </p>
+
+            <p class="main-message">
+                From my Family to Yours, Eid al Adha! Wishing you all
+                Peace, Harmony, Happiness, good Health and Prosperity
+                on the auspicious occasion of Eid al Adha.
+            </p>
+
+            <div class="name-input-container">
+                <label for="userName">Enter Your Name (for sharing):</label>
+                <input type="text" id="userName" placeholder="Type your name here">
+            </div>
+
+            <!-- Audio Element (no 'muted' attribute) -->
+            <audio id="backgroundMusic" src="nawal.mp3" autoplay loop></audio>
+        </div>
+    </div>
+
+    <!-- Fixed Share Button Container -->
+    <div class="action-buttons-container">
+        <button id="shareButton" class="action-button">
+            <svg class="button-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.59 15.33 3.43 16.79L2 22L7.32 20.59C8.73 21.33 10.34 21.78 12.04 21.78C17.5 21.78 21.95 17.33 21.95 11.87C21.95 6.41 17.5 2 12.04 2ZM17.98 16.3C17.71 16.72 16.82 17.21 16.34 17.27C15.86 17.33 15.21 17.36 14.73 17.19C14.26 17.02 13.26 16.67 12.12 15.6C10.73 14.29 9.89 12.73 9.72 12.46C9.55 12.19 9.06 11.59 9.06 10.97C9.06 10.35 9.41 10.03 9.64 9.81C9.87 9.59 10.19 9.53 10.4 9.53C10.56 9.53 10.71 9.54 10.85 9.57C11.01 9.6 11.13 9.63 11.31 10C11.52 10.41 11.73 10.85 11.8 11.01C11.88 11.19 11.91 11.36 11.82 11.56C11.73 11.77 11.65 11.86 11.46 12.07C11.28 12.28 11.08 12.42 10.91 12.59C10.76 12.74 10.61 12.91 10.76 13.18C10.91 13.45 11.44 14.26 12.17 14.93C13.11 15.79 13.85 16.06 14.12 16.18C14.39 16.3 14.59 16.27 14.76 16.09C14.98 15.84 15.29 15.41 15.5 15.12C15.72 14.82 15.98 14.79 16.26 14.88C16.54 14.97 17.38 15.39 17.6 15.61C17.82 15.83 17.93 16.01 17.98 16.13C17.98 16.3 17.98 16.3 17.98 16.3Z" /></svg>
+            Share with Friends
+        </button>
+    </div>
+
+    <!-- Bottom Banner Ad Slot -->
+    <div id="adSlotBottom" class="ad-slot-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '51d40974d52bdd3c0eefb85fdae89c5a',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/51d40974d52bdd3c0eefb85fdae89c5a/invoke.js"></script>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const userNameInput = document.getElementById('userName');
+            const displayedSenderName = document.getElementById('displayedSenderName');
+            const shareButton = document.getElementById('shareButton');
+            const defaultSenderName = "Frisharwa"; // Default name if no input or URL param
+            const backgroundMusic = document.getElementById('backgroundMusic'); // Get the audio element
+
+            const musicToggleButton = document.getElementById('musicToggleButton');
+            const speakerOnIcon = document.getElementById('speakerOn');
+            const speakerOffIcon = document.getElementById('speakerOff');
+
+            // Function to update speaker icon based on muted state
+            function updateSpeakerIcon() {
+                if (backgroundMusic.muted) {
+                    speakerOnIcon.style.display = 'none';
+                    speakerOffIcon.style.display = 'block';
+                } else {
+                    speakerOnIcon.style.display = 'block';
+                    speakerOffIcon.style.display = 'none';
+                }
+            }
+
+            // Function to launch confetti for a festive touch
+            function launchConfetti() {
+                const duration = 4 * 1000;
+                const animationEnd = Date.now() + duration;
+                // Confetti colors inspired by Eid themes: Gold, Silver, Cream, Teal, Royal Blue
+                const defaults = {
+                    startVelocity: 25,
+                    spread: 360,
+                    ticks: 50,
+                    zIndex: 100,
+                    colors: ['#D4AF37', '#C0C0C0', '#F7F1E7', '#008080', '#4169E1', '#FFD700'] 
+                };
+                function randomInRange(min, max) { return Math.random() * (max - min) + min; }
+
+                let animationFrameId;
+                function frame() {
+                    const timeLeft = animationEnd - Date.now();
+                    if (timeLeft <= 0) {
+                        return cancelAnimationFrame(animationFrameId);
+                    }
+                    const particleCount = 30 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                    confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+                    animationFrameId = requestAnimationFrame(frame);
+                }
+                frame();
+            }
+
+            // Handle potential errors if the framed image fails to load
+            const framedPersonImage = document.querySelector('.framed-person-img');
+            if (framedPersonImage) {
+                framedPersonImage.onerror = () => {
+                    framedPersonImage.alt = "Eid al Adha Greeting Image"; // Fallback alt text
+                    console.error("Failed to load framed person image: " + framedPersonImage.src);
+                };
+            }
+
+            // Set the initially displayed sender name (from URL or default)
+            function setInitialDisplayedSenderName() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlSender = urlParams.get('sender');
+                
+                // Display the name from the URL, or the default if no URL param
+                displayedSenderName.textContent = urlSender ? decodeURIComponent(urlSender) : defaultSenderName;
+                
+                // Ensure the input field is always empty on load for the user to type their name
+                userNameInput.value = "";
+            }
+
+            // Call to set the initial displayed name on page load
+            setInitialDisplayedSenderName();
+
+            // Initial confetti burst when the page loads
+            launchConfetti();
+
+            // --- Music Playback Logic ---
+            if (backgroundMusic) {
+                // Attempt to play audio unmuted on page load
+                backgroundMusic.play()
+                    .then(() => {
+                        // Playback started successfully (may still be muted by browser if not allowed to unmute)
+                        console.log("Audio playback initiated.");
+                        // Ensure the speaker icon reflects the actual (unmuted) state if it plays
+                        backgroundMusic.muted = false; // Confirm unmuted
+                        updateSpeakerIcon();
+                    })
+                    .catch(error => {
+                        // Playback was prevented (most common scenario for unmuted autoplay)
+                        console.warn("Autoplay was prevented by browser. Music will start muted. Click speaker icon to unmute.", error);
+                        backgroundMusic.muted = true; // Ensure it's muted if autoplay failed
+                        updateSpeakerIcon(); // Update icon to 'speaker off'
+                    });
+
+                // Set up event listener for toggle button
+                if (musicToggleButton) {
+                    musicToggleButton.addEventListener('click', function() {
+                        backgroundMusic.muted = !backgroundMusic.muted; // Toggle mute state
+                        // If unmuting, try to play if it's paused (important if autoplay was blocked)
+                        if (!backgroundMusic.muted && backgroundMusic.paused) {
+                            backgroundMusic.play().catch(e => console.error("Error playing audio after unmute button click:", e));
+                        }
+                        updateSpeakerIcon(); // Update icon after state change
+                    });
+                }
+                
+                // Add event listeners to react to system/browser volume changes or manual controls (if any)
+                backgroundMusic.addEventListener('volumechange', updateSpeakerIcon);
+                backgroundMusic.addEventListener('play', updateSpeakerIcon);
+                backgroundMusic.addEventListener('pause', updateSpeakerIcon);
+            }
+
+            // Function to prepare data for sharing
+            function getShareData() {
+                let senderNameForShare = userNameInput.value.trim();
+                if (senderNameForShare === "") {
+                    senderNameForShare = defaultSenderName; // If user didn't type, use default for outgoing link
+                }
+
+                const pageTitle = "Eid al Adha Mubarak!";
+                const mainGreeting = "From my Family to Yours, Eid al Adha! Wishing you all Peace, Harmony, Happiness, good Health and Prosperity on the auspicious occasion of Eid al Adha.";
+
+                // Construct the base URL for sharing
+                const baseUrl = window.location.origin + window.location.pathname;
+                const encodedSenderName = encodeURIComponent(senderNameForShare);
+                const shareUrlWithSender = `${baseUrl}?sender=${encodedSenderName}`;
+
+                // Create the message text for sharing
+                const shareMessageText =
+                    `${pageTitle} from ${senderNameForShare}!
+
+    ${mainGreeting}
+
+    Click the link below to see the full greeting:
+    ${shareUrlWithSender}`;
+
+                return { title: pageTitle, text: shareMessageText, url: shareUrlWithSender };
+            }
+
+            // Event listener for the share button
+            if(shareButton) {
+                shareButton.addEventListener('click', async function () {
+                    const dataToShare = getShareData();
+                    if (navigator.share) {
+                        // Use Web Share API if available (for mobile)
+                        try {
+                            await navigator.share(dataToShare);
+                            launchConfetti(); // Relaunch confetti on successful share
+                        } catch (error) {
+                            console.error('Error using navigator.share:', error);
+                            alert('Sharing failed or was cancelled. Please try again.');
+                        }
+                    } else {
+                        // Fallback for browsers that don't support Web Share API (desktop)
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            navigator.clipboard.writeText(dataToShare.url)
+                                .then(() => {
+                                    alert(`Link copied!\n\n${dataToShare.url}\n\nNow you can paste and share it anywhere.`);
+                                    launchConfetti();
+                                })
+                                .catch(err => {
+                                    console.error('Failed to copy link: ', err);
+                                    // Fallback to prompt if clipboard write fails
+                                    prompt("To copy the link, press Ctrl+C (or Command+C), then Enter:", dataToShare.url);
+                                });
+                        } else {
+                            // Older fallback if no clipboard API
+                            prompt("To copy the link, press Ctrl+C (ya Command+C), phir Enter:", dataToShare.url);
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
